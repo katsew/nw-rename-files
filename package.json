@@ -1,0 +1,25 @@
+{
+  "name": "Yu",
+  "main": "index.html",
+  "description": "ファイル名のおしりに1,2,3を付けたものを複製して別ディレクトリに入れる",
+  "version": "0.1.0",
+  "window": {
+    "toolbar": false,
+    "width": 500,
+    "height": 430
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "http://github.com/katsew"
+    }
+  ],
+  "dependencies": {
+    "async": "^0.9.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "katsew",
+  "license": "MIT"
+}
