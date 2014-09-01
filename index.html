@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <head>
 <meta charset="utf-8">
-<script type="text/javascript" src="./js/main.js"></script>
 </head>
 
 <body>
-<h1>タイトル</h1>
+<h1>画像ファイル名変換アプリ</h1>
 
+<div>
+  <p>画像名を変換したいフォルダを選択してください</p>
+  フォルダ選択<input type="file" name="input" id="inputDir" nwdirectory />
+</div>
+<div>
+  <p>変換後のファイル一覧を出力するフォルダを選択してください</p>
+  フォルダ選択<input type="file" name="output" id="outputDir" nwdirectory />
+</div>
 
+<div>
+  <button id="commit">変換</button>
+</div>
+
+<script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>
 

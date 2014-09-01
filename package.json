@@ -11,7 +11,7 @@
   "repositories": [
     {
       "type": "git",
-      "url": "http://github.com/katsew"
+      "url": "http://github.com/katsew/nw-rename-files"
     }
   ],
   "dependencies": {
