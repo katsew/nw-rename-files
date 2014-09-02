@@ -4,22 +4,53 @@ var fs = require('fs'),
     options = require('url').parse('https://api.tinypng.com/shrink'),
     API_KEY = window.localStorage.getItem('APIToken') || '';
 
+var log = document.getElementById('log');
+function appendLog(text) {
+  var textNode = document.createTextNode(text);
+  var div = document.createElement('div');
+  div.appendChild(textNode);
+  log.appendChild(div);
+  return;
+}
+
 function Uploader() {
   this.inputDir = '';
   this.outputDir = '';
+  this.apiToken = '';
+  this.failedFiles = [];
 }
+Uploader.prototype.validate = function () {
+  if (this.inputDir === '' || this.outputDir === '' || this.apiToken === '' || this.inputDir == null || this.outputDir == null || this.apiToken == null) {
+    appendLog('Failed to validate input. please make sure if directory selected or API Token sets.');
+    alert('フォルダが選択されていないか、\nAPIトークンがセットされていません');
+    return false;
+  }
+  return true;
+};
 Uploader.prototype.publish = function () {
   var _this = this;
 
   API_KEY = document.getElementById('APIToken').value;
+  this.apiToken = API_KEY;
   options.auth = "api:" + API_KEY;
   options.method = "POST";
 
   if ( API_KEY !== '' && API_KEY != null ) {
     window.localStorage.setItem('APIToken', API_KEY);
   }
+  
+  if ( !_this.validate() ) { return false; }
+
+
+  appendLog('Create output directory...');
+  try {
+    fs.mkdirSync(_this.inputDir+'/output');  
+    appendLog('Success create output directory!');
+  } catch (e) {
+    appendLog('output directory has already exists.');
+  }
   fs.readdir(_this.inputDir, function(err, files){
-    if (err) { throw err }
+    if (err) { appendLog(err); }
 
     Object.keys(files).forEach(function(key) {
       async.series([
@@ -30,67 +61,73 @@ Uploader.prototype.publish = function () {
             var first_write = fs.createWriteStream(_this.inputDir+'/output/'+files[key]);
             var request = https.request(options, function (response) {
 
-              console.log('--- output response ---');
-              console.log(response);
-
               if (response.statusCode === 201) {
                 https.get(response.headers.location, function (response) {
-                  console.log('Success GET response');
-                  console.log(response);
+                  appendLog('success get response!\nwriting image...');
                   response.pipe(first_write);
                   first_write.on('finish', function() {
-                    callback(null, 'first');
+                    appendLog('finish write image file: ' + files[key]);
+                    callback(null, 'success compress');
                   });
                 });
               } else {
-                console.log("Compression failed");
-                callback(null, 'first');
+                appendLog('Failed to compress image!\nfile:' + files[key] + '\n' + response);
+                _this.failedFiles.push(files[key]);
+                callback(null, 'failed compress');
               }
             });
             first_read.pipe(request);
           } else {
-            console.log(' no image file found ');
+            appendLog('Not an image file error at file: ' + files[key]);
           }
         },
         function (callback) {
-          console.log('second process');
           var fileName = files[key].split('.')[0];
           var fileExt = files[key].split('.')[1];
-          console.log(fileName);
 
           var newFileName = fileName + 1;
           var second_read = fs.createReadStream(_this.inputDir+'/output/'+files[key]);
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
-          callback(null, 'second');
+
+          appendLog('success write first image: ' + newFileName);
+          callback(null, 'copy01 success');
         },
         function (callback) {
-          console.log('third process');
           var fileName = files[key].split('.')[0];
           var fileExt = files[key].split('.')[1];
-          console.log(fileName);
 
           var newFileName = fileName + 2;
           var second_read = fs.createReadStream(_this.inputDir+'/output/'+files[key]);
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
-          callback(null, 'third');
+
+          appendLog('success write second image: ' + newFileName);
+          callback(null, 'copy02 success');
         },
         function (callback) {
-          console.log('forth process');
           var fileName = files[key].split('.')[0];
           var fileExt = files[key].split('.')[1];
-          console.log(fileName);
 
           var newFileName = fileName + 3;
           var second_read = fs.createReadStream(_this.inputDir+'/output/'+files[key]);
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
-          callback(null, 'forth');
+
+          appendLog('success write third image: ' + newFileName);
+          callback(null, 'copy03 success');
         }
       ], function(err, results) {
-        if (err) { throw err; }
-        console.log('series all done.' + results);
+        if (err) { appendLog('An error occured!!\nERROR:' + err); }
+        appendLog('all process done!\n' + results);
+
+        if ( _this.failedFiles.length > 0 ) {
+          appendLog('Following files are not compressed:\n');
+          for (var k=0; k < _this.failedFiles.length; k++) {
+            appendLog(_this.failedFiles[k]);
+          }
+        }
+
       });      
     });
   });

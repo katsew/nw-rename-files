@@ -8,20 +8,24 @@
 <div class="title">画像ファイル名変換アプリ</div>
 
 <div class="section">
-  <div class="title-small">1.トークンを入力してください</div>
+  <div class="title-small">1. APIトークンを入力してください</div>
   <input type="text" class="input" id="APIToken">
 </div>
 <div class="section">
-  <div class="title-small">2.画像名を変換したいフォルダを選択してください</div>
+  <div class="title-small">2. 画像名を変換したいフォルダを選択してください</div>
   <label class="label">フォルダ選択</label><input type="file" name="input" id="inputDir" nwdirectory />
 </div>
 <div class="section">
-  <div class="title-small">3.変換後のファイル一覧を出力するフォルダを選択してください</div>
+  <div class="title-small">3. 変換後のファイル一覧を出力するフォルダを選択してください</div>
   <label class="label">フォルダ選択</label><input type="file" name="output" id="outputDir" nwdirectory />
 </div>
 
 <div class="section">
   <button class="button" id="commit">変換</button>
+</div>
+
+<div class="section log" id="log">
+
 </div>
 
 <script type="text/javascript" src="./js/main.js"></script>
