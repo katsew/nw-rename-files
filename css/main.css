@@ -1,0 +1,57 @@
+html, body {
+  font-family: Verdana, "游ゴシック", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  padding: 10px;
+}
+
+.title {
+  color: #505050;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+.title-small {
+  color: #333333;
+  font-size: 12px;
+}
+
+.input {
+  font-size: 12px;
+  text-indent: 5px;
+  width: 180px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border: 1px solid #ccc;
+  outline: none;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  padding: 5px 0;
+}
+
+.label {
+  font-size: 10px;
+  display: block;
+  margin: 0 0 0 3px;
+}
+
+.button {
+  background-color: #48964a;
+  width: 100px;
+  height: 25px;
+  border: none;
+  color: white;
+  letter-spacing: 10px;
+  text-indent: 8px;
+  margin-top: 25px;
+  -webkit-transition: all, ease, 0.2s 0;
+  transition: all, ease, 0.2s 0;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.button:hover {
+  background-color: #326934;
+  cursor: pointer;
+}
+
+.section {
+  margin-bottom: 25px;
+}

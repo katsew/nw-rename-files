@@ -4,7 +4,7 @@
   "description": "ファイル名のおしりに1,2,3を付けたものを複製して別ディレクトリに入れる",
   "version": "0.1.0",
   "window": {
-    "toolbar": false,
+    "toolbar": true,
     "width": 500,
     "height": 430
   },
