@@ -42,12 +42,12 @@ Uploader.prototype.publish = function () {
   if ( !_this.validate() ) { return false; }
 
 
-  appendLog('Create output directory...');
+  appendLog('ディレクトリ作成中...');
   try {
     fs.mkdirSync(_this.inputDir+'/output');  
-    appendLog('Success create output directory!');
+    appendLog('[output]ディレクトリ作成完了');
   } catch (e) {
-    appendLog('output directory has already exists.');
+    appendLog('[output]ディレクトリはすでに存在しています');
   }
   fs.readdir(_this.inputDir, function(err, files){
     if (err) { appendLog(err); }
@@ -59,26 +59,38 @@ Uploader.prototype.publish = function () {
 
             var first_read = fs.createReadStream(_this.inputDir+'/'+files[key]);
             var first_write = fs.createWriteStream(_this.inputDir+'/output/'+files[key]);
-            var request = https.request(options, function (response) {
 
-              if (response.statusCode === 201) {
-                https.get(response.headers.location, function (response) {
-                  appendLog('success get response!\nwriting image...');
-                  response.pipe(first_write);
-                  first_write.on('finish', function() {
-                    appendLog('finish write image file: ' + files[key]);
-                    callback(null, 'success compress');
+            // pngの場合のみtinypngする
+            if (/.*\.png$/.test(files[key])) {
+              var request = https.request(options, function (response) {
+
+                if (response.statusCode === 201) {
+                  https.get(response.headers.location, function (response) {
+                    appendLog('通信が完了しました\n画像を書き込んでいます...');
+                    response.pipe(first_write);
+                    first_write.on('finish', function() {
+                      appendLog('画像の圧縮が完了しました: ' + files[key]);
+                      callback(null, '圧縮成功');
+                    });
                   });
-                });
-              } else {
-                appendLog('Failed to compress image!\nfile:' + files[key] + '\n' + response);
-                _this.failedFiles.push(files[key]);
-                callback(null, 'failed compress');
-              }
-            });
-            first_read.pipe(request);
+                } else {
+                  appendLog('圧縮に失敗しました: ' + files[key]);
+                  _this.failedFiles.push(files[key]);
+                  callback(null, '圧縮失敗');
+                }
+              });
+              first_read.pipe(request);
+
+            } else {
+              first_read.pipe(first_write);
+              first_write.on('finish', function() {
+                appendLog('outputディレクトリに画像を移動: ' + files[key]);
+                callback(null, '圧縮なし');
+              });
+            }
+
           } else {
-            appendLog('Not an image file error at file: ' + files[key]);
+            appendLog('画像ファイルではありません: ' + files[key]);
           }
         },
         function (callback) {
@@ -90,8 +102,8 @@ Uploader.prototype.publish = function () {
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
 
-          appendLog('success write first image: ' + newFileName);
-          callback(null, 'copy01 success');
+          appendLog('xxxx1にリネーム完了: ' + newFileName);
+          callback(null, 'xxxx1成功');
         },
         function (callback) {
           var fileName = files[key].split('.')[0];
@@ -102,8 +114,8 @@ Uploader.prototype.publish = function () {
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
 
-          appendLog('success write second image: ' + newFileName);
-          callback(null, 'copy02 success');
+          appendLog('xxxx2にリネーム完了: ' + newFileName);
+          callback(null, 'xxxx2成功');
         },
         function (callback) {
           var fileName = files[key].split('.')[0];
@@ -114,18 +126,20 @@ Uploader.prototype.publish = function () {
           var second_write = fs.createWriteStream(_this.outputDir+'/'+newFileName+'.'+fileExt);
           second_read.pipe(second_write);
 
-          appendLog('success write third image: ' + newFileName);
-          callback(null, 'copy03 success');
+          appendLog('xxxx3にリネーム完了: ' + newFileName);
+          callback(null, 'xxxx3成功');
         }
       ], function(err, results) {
-        if (err) { appendLog('An error occured!!\nERROR:' + err); }
-        appendLog('all process done!\n' + results);
+        if (err) { appendLog('エラーが発生しました\nERROR:' + err); }
+        appendLog('処理が完了しました\n' + results);
 
         if ( _this.failedFiles.length > 0 ) {
-          appendLog('Following files are not compressed:\n');
+          appendLog('以下のファイルが圧縮されませんでした:\n');
           for (var k=0; k < _this.failedFiles.length; k++) {
             appendLog(_this.failedFiles[k]);
           }
+        } else {
+          appendLog('すべての圧縮処理が正常に完了しました');
         }
 
       });      
