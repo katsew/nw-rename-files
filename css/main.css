@@ -1,6 +1,7 @@
 html, body {
   font-family: Verdana, "游ゴシック", YuGothic, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
   padding: 10px;
+  outline: none;
 }
 
 .title {
@@ -52,6 +53,15 @@ html, body {
   background-color: #326934;
   cursor: pointer;
 }
+
+.button.paste {
+  letter-spacing: normal;
+  text-indent: 0;
+  width: 80px;
+  height: 28px;
+  margin-left: 10px;
+}
+
 
 .section {
   margin-bottom: 25px;

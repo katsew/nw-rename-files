@@ -1,8 +1,10 @@
 var fs = require('fs'),
     async = require('async'),
     https = require('https'),
+    gui = require('nw.gui'),
     options = require('url').parse('https://api.tinypng.com/shrink'),
     API_KEY = window.localStorage.getItem('APIToken') || '';
+
 
 var log = document.getElementById('log');
 function appendLog(text) {
@@ -153,6 +155,8 @@ function init() {
   var output = document.getElementById('outputDir');
   var button = document.getElementById('commit');
   var tokenInput = document.getElementById('APIToken');
+  var pasteButton = document.getElementById('pasteClipboard');
+
   tokenInput.value = API_KEY;
   input.addEventListener('change', function(e) {
     uploader.inputDir = this.value;
@@ -162,6 +166,12 @@ function init() {
   }, false);
   button.addEventListener('click', function(e) {
     uploader.publish();
+  });
+  pasteButton.addEventListener('click', function(e) {
+    var clipboard = gui.Clipboard.get();
+    var clipboardText = clipboard.get('text');
+    appendLog('paste clipboard text: ' + clipboardText);
+    tokenInput.value = clipboardText;
   });
 }
 init();
